@@ -1,0 +1,563 @@
+---
+title: "Copa do Mundo FIFA 2026"
+subtitle: "Análise Histórica e Projeções de 1930 a 2026"
+author: "João Caldas"
+date: "Janeiro de 2026"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    theme: cosmo
+    number-sections: true
+    code-fold: false
+    code-tools: true
+    smooth-scroll: true
+    link-external-newwindow: true
+    css: styles-corrigido.css
+    grid:
+      sidebar-width: 280px
+      body-width: 1000px
+      margin-width: 250px
+    include-in-header:
+      text: |
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(patchwork)
+library(leaflet)
+library(scales)
+library(htmlwidgets)
+library(htmltools)
+```
+
+::: {.header-verao}
+<div class="header-container">
+  <img src="img/logo_verao_ime_usp.png" class="logo-verao" alt="Logo Verão IME-USP">
+  <div class="header-text">
+    <h1 class="titulo-principal">Copa do Mundo FIFA 2026</h1>
+    <p class="subtitulo-principal">Análise Histórica e Projeções de 1930 a 2026</p>
+  </div>
+</div>
+:::
+
+<div class="page-break"></div>
+
+## Introdução
+
+A Copa do Mundo de 2026 marca um momento histórico sem precedentes no futebol mundial. Pela primeira vez na história de 96 anos do torneio, três nações sediarão conjuntamente o evento: **Canadá, Estados Unidos e México**. Esta edição não representa apenas uma expansão geográfica, mas uma transformação fundamental na estrutura, escala e filosofia do maior espetáculo do futebol.
+
+O torneio crescerá de 32 para **48 seleções participantes**, um aumento no número total de partidas de 64 para **104 jogos**.
+
+::: {.caixa-destaque}
+**Por que esta análise importa?**
+
+Para contextualizar adequadamente o tamanho desta transformação, é essencial examinar a trajetória evolutiva do torneio desde sua criação em 1930. Através de dados históricos, podemos avaliar se estamos diante de um crescimento sustentável ou de um salto de escala que demandará inovações operacionais radicais.
+:::
+
+### Contexto Histórico: De Montevidéu a Três Nações
+
+Quando a primeira Copa do Mundo foi realizada no Uruguai em 1930, apenas **13 seleções** participaram em um único país. O torneio era compacto, logisticamente simples e geograficamente concentrado. Ao longo de quase um século, o evento evoluiu gradualmente:
+
+- **1930-1978**: Formato inicial com 13-16 seleções
+- **1982-1994**: Primeira grande expansão para 24 seleções
+- **1998-2022**: Consolidação do formato de 32 seleções
+- **2026**: Transformação radical para 48 seleções em três países
+
+<div class="page-break"></div>
+
+## Metodologia e Fontes de Dados
+
+### Coleta e Processamento de Dados
+
+Esta análise utiliza dados compilados de repositórios públicos especializados em estatísticas esportivas. As bases de dados abrangem todas as edições da Copa do Mundo FIFA de 1930 a 2022, incluindo informações detalhadas sobre partidas, público, sedes, resultados e estatísticas de jogadores.
+
+**Fontes principais:**
+
+- [FIFA World Cup Matches 1930-2022](https://www.kaggle.com/code/noahx1/fifa-world-cup-1930-2022) 
+- [FIFA World Cup Historical Data](https://www.kaggle.com/datasets/abecklas/fifa-world-cup)
+- [World Cup Comprehensive Dataset](https://www.kaggle.com/datasets/pabitrakumarsahoo/world-cup) 
+
+### Tratamento e Validação
+
+Os dados foram submetidos a um processo de validação para garantir **Consistência temporal, Integridade de dados e formatos, Identificação e tratamento de valores ausentes,  Padronização**
+
+::: {.panel-tabset}
+
+### Visão Geral dos Dados
+
+```{r dados-overview}
+#| code-fold: true
+#| echo: true
+
+historico <- read_csv("dados/world_cup_final.csv", show_col_types = FALSE)
+coords    <- read_csv("dados/coords_historico_total.csv", show_col_types = FALSE)
+matches   <- read_csv("dados/matches_1930_2022.csv", show_col_types = FALSE)
+
+# Resumo estatístico do histórico
+head(historico, 8) %>% 
+  kable(caption = "Tabela 1: Histórico das Copas do Mundo (1930-2026)") %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+    full_width = FALSE,
+    font_size = 14
+  ) %>%
+  row_spec(0, bold = TRUE, background = "#FF9500", color = "white")
+```
+
+### Estrutura das Partidas
+
+```{r dados-partidas}
+#| code-fold: true
+#| echo: true
+
+# Amostra de partidas históricas
+matches %>% 
+  select(Year, Round, home_team, away_team, home_score, away_score, Attendance, Venue) %>% 
+  filter(Year >= 2010) %>%
+  head(10) %>%
+  kable(caption = "Tabela 2: Amostra de Partidas Recentes") %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = TRUE,
+    font_size = 14
+  ) %>%
+  row_spec(0, bold = TRUE, background = "#FF9500", color = "white")
+```
+
+### Ambiente Técnico
+
+**Plataforma de Desenvolvimento:**  
+R versão 4.x no ambiente Positron, com documentação em Quarto
+
+**Bibliotecas Utilizadas:**
+
+```{r bibliotecas, echo=TRUE, eval=FALSE}
+library(tidyverse)    # Manipulação e visualização de dados
+library(leaflet)      # Mapas interativos
+library(patchwork)    # Composição de gráficos
+library(knitr)        # Geração de tabelas
+library(kableExtra)   # Formatação avançada de tabelas
+library(scales)       # Formatação de escalas numéricas
+library(htmlwidgets)  # Widgets HTML interativos
+```
+
+:::
+
+<div class="page-break"></div>
+
+## Evolução Temporal do Torneio
+
+### O Crescimento em Números
+
+A evolução da Copa do Mundo pode ser compreendida através de métricas fundamentais que refletem sua escala e complexidade. Os gráficos a seguir ilustram duas dimensões críticas: o número de seleções participantes e o total de partidas disputadas.
+
+```{r graficos-evolucao}
+#| fig-width: 14
+#| fig-height: 7
+#| code-fold: true
+#| echo: true
+#| fig-cap: "Figura 1: Evolução das Métricas Fundamentais do Torneio (1930-2026)"
+
+library(tidyverse)
+library(patchwork)
+
+historico <- read_csv("dados/world_cup_final.csv", show_col_types = FALSE)
+
+# Paleta de cores do programa
+cor_destaque <- "#FF9500"
+cor_base <- "#FFD500"
+cor_texto <- "#2C3E50"
+
+tema_personalizado <- theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, color = cor_texto, hjust = 0.5),
+    plot.subtitle = element_text(color = "grey40", size = 13, hjust = 0.5, margin = margin(b = 15)),
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 13),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank(),
+    legend.position = "none",
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA)
+  )
+
+# Gráfico 1: Número de Partidas
+g1 <- ggplot(historico, aes(x = factor(Year), y = Matches)) +
+  geom_col(aes(fill = Year == 2026), width = 0.7) +
+  scale_fill_manual(values = c("TRUE" = cor_destaque, "FALSE" = "#95A5A6")) +
+  geom_text(aes(label = Matches), vjust = -0.5, size = 4, fontface = "bold", color = cor_texto) +
+  labs(
+    title = "Total de Partidas por Edição",
+    subtitle = "Crescimento de 62.5% previsto para 2026",
+    x = "Ano da Copa",
+    y = "Número de Partidas"
+  ) +
+  tema_personalizado
+
+# Gráfico 2: Número de Seleções
+g2 <- ggplot(historico, aes(x = factor(Year), y = Teams)) +
+  geom_col(aes(fill = Year == 2026), width = 0.7) +
+  scale_fill_manual(values = c("TRUE" = cor_destaque, "FALSE" = "#95A5A6")) +
+  geom_text(aes(label = Teams), vjust = -0.5, size = 4, fontface = "bold", color = cor_texto) +
+  labs(
+    title = "Seleções Participantes por Edição",
+    subtitle = "Expansão de 50% no número de equipes",
+    x = "Ano da Copa",
+    y = "Número de Seleções"
+  ) +
+  tema_personalizado
+
+# Composição lado a lado
+g1 + g2
+```
+
+::: {.caixa-analise}
+**Insights da Evolução Temporal**
+
+A análise longitudinal revela quatro fases distintas no desenvolvimento do torneio:
+
+1. **Fase Fundacional (1930-1950)**: Estabelecimento do conceito com variação entre 13-16 seleções
+
+2. **Período de Estabilização (1954-1978)**: Consolidação em 16 seleções
+
+3. **Primeira Expansão Significativa (1982-1994)**: Salto para 24 seleções
+
+4. **Era Moderna (1998-2022)**: Formato estável de 32 seleções
+
+5. **Transformação de 2026**: Aumento para 48 seleções representa o maior crescimento proporcional da história
+:::
+
+### Análise de Público e Engajamento
+
+Além do número de partidas e seleções, o público representa um indicador crucial do alcance e impacto do torneio.
+
+```{r grafico-publico}
+#| fig-width: 14
+#| fig-height: 6
+#| code-fold: true
+#| echo: true
+#| fig-cap: "Figura 2: Evolução do Público Total e Média de Público por Partida"
+
+# Preparando dados de público
+dados_publico <- historico %>%
+  filter(!is.na(Attendance)) %>%
+  mutate(
+    Attendance_Millions = Attendance / 1000000,
+    AvgAttendance_Thousands = AttendanceAvg / 1000
+  )
+
+# Gráfico de público total
+p1 <- ggplot(dados_publico, aes(x = factor(Year), y = Attendance_Millions)) +
+  geom_line(aes(group = 1), color = cor_destaque, size = 1.5) +
+  geom_point(aes(fill = Year == 2026), size = 5, shape = 21, stroke = 2) +
+  scale_fill_manual(values = c("TRUE" = cor_destaque, "FALSE" = cor_base)) +
+  labs(
+    title = "Público Total por Edição",
+    subtitle = "Milhões de torcedores nos estádios",
+    x = "Ano da Copa",
+    y = "Público (Milhões)"
+  ) +
+  tema_personalizado
+
+# Gráfico de média por partida
+p2 <- ggplot(dados_publico, aes(x = factor(Year), y = AvgAttendance_Thousands)) +
+  geom_col(aes(fill = Year == 2026), width = 0.7) +
+  scale_fill_manual(values = c("TRUE" = cor_destaque, "FALSE" = "#95A5A6")) +
+  labs(
+    title = "Público Médio por Partida",
+    subtitle = "Milhares de torcedores por jogo",
+    x = "Ano da Copa",
+    y = "Público Médio (Milhares)"
+  ) +
+  tema_personalizado
+
+p1 + p2
+```
+
+<div class="page-break"></div>
+
+## Distribuição Geográfica e Desafios Logísticos
+
+### Modelos Organizacionais Comparados
+
+A geografia das sedes oferece insights fundamentais sobre a evolução logística do torneio. Analisamos três edições recentes que exemplificam modelos organizacionais radicalmente distintos.
+
+```{r mapa-2014}
+#| fig-cap: "Mapa 1: Distribuição das Sedes - Brasil 2014"
+#| code-fold: true
+#| echo: true
+coords <- read_csv("dados/coords_historico_total.csv", show_col_types = FALSE)
+
+# Sedes do Brasil 2014
+sedes_2014 <- coords %>% 
+  filter(cidade %in% c("Rio de Janeiro", "Sao Paulo", "Belo Horizonte", 
+                       "Brasilia", "Fortaleza", "Manaus", "Salvador",
+                       "Recife", "Porto Alegre", "Curitiba", "Natal", "Cuiaba"))
+
+# Mapa interativo - Brasil 2014
+leaflet(sedes_2014, width = "100%", height = "500px") %>%
+  addTiles() %>%
+  addCircleMarkers(
+    lng = ~lng,
+    lat = ~lat,
+    radius = 10,
+    color = "#009b3a",
+    fillColor = "#FFD500",
+    fillOpacity = 0.8,
+    weight = 2,
+    popup = ~paste0("<strong>", cidade, "</strong><br>Brasil 2014")
+  ) %>%
+  setView(lng = -50, lat = -15, zoom = 4)
+```
+
+::: {.caixa-info}
+**Brasil 2014 - Modelo Nacional Distribuído**
+
+- **Sedes**: 12 cidades em todas as regiões brasileiras
+- **Área de cobertura**: 8.5 milhões de km²
+- **Distância máxima**: Aproximadamente 4,300 km
+- **Característica**: Descentralização geográfica
+:::
+
+```{r mapa-2022}
+#| fig-cap: "Mapa 2: Distribuição das Sedes - Catar 2022"
+#| code-fold: true
+#| echo: true
+# Sedes do Catar 2022
+sedes_2022 <- coords %>% 
+  filter(cidade %in% c("Lusail", "Doha", "Al Rayyan", "Al Wakrah", "Al Khor"))
+
+# Mapa interativo - Catar 2022
+leaflet(sedes_2022, width = "100%", height = "500px") %>%
+  addTiles() %>%
+  addCircleMarkers(
+    lng = ~lng,
+    lat = ~lat,
+    radius = 12,
+    color = "#8a1538",
+    fillColor = "#FF9500",
+    fillOpacity = 0.9,
+    weight = 2,
+    popup = ~paste0("<strong>", cidade, "</strong><br>Catar 2022")
+  ) %>%
+  setView(lng = 51.3, lat = 25.4, zoom = 10)
+```
+
+::: {.caixa-info}
+**Catar 2022 - Modelo Ultracompacto**
+
+- **Sedes**: 8 estádios em área metropolitana
+- **Área de cobertura**: Apenas 11,586 km²
+- **Distância máxima**: Aproximadamente 55 km
+- **Característica**: Primeira Copa com múltiplos jogos por dia para torcedores
+:::
+
+```{r mapa-2026}
+#| fig-cap: "Mapa 3: Distribuição das Sedes - América do Norte 2026"
+#| code-fold: true
+#| echo: true
+
+# Sedes 2026
+sedes_2026 <- coords %>% 
+  filter(lat > 15 & lng < -60)
+
+# Mapa interativo - América do Norte 2026
+leaflet(sedes_2026, width = "100%", height = "500px") %>%
+  addTiles() %>%
+  addCircleMarkers(
+    lng = ~lng,
+    lat = ~lat,
+    radius = 9,
+    color = "#00274c",
+    fillColor = "#FF9500",
+    fillOpacity = 0.8,
+    weight = 2,
+    popup = ~paste0("<strong>", cidade, "</strong><br>2026")
+  ) %>%
+  setView(lng = -100, lat = 35, zoom = 4)
+```
+
+::: {.caixa-info}
+**América do Norte 2026 - Modelo Transcontinental**
+
+- **Sedes**: 16 cidades em 3 países
+- **Área de cobertura**: Aproximadamente 21 milhões de km²
+- **Distância máxima**: Cerca de 5,500 km
+- **Característica**: Primeira Copa em três países simultaneamente
+:::
+
+### Comparação Quantitativa dos Modelos
+
+```{r tabela-comparativa}
+#| code-fold: true
+#| echo: true
+tribble(
+  ~Característica, ~Brasil_2014, ~Catar_2022, ~América_Norte_2026,
+  "Modelo Organizacional", "Nacional Distribuído", "Metropolitano Compacto", "Transcontinental",
+  "Países-sede", "1", "1", "3",
+  "Número de sedes", "12", "8", "16",
+  "Área territorial (km²)", "8.5 milhões", "11,586", "~21 milhões",
+  "Distância máxima (km)", "~4,300", "~55", "~5,500",
+  "Fusos horários", "4", "1", "4",
+  "Seleções participantes", "32", "32", "48",
+  "Total de partidas", "64", "64", "104"
+) %>%
+  kable(
+    caption = "Tabela 3: Análise Comparativa dos Modelos Organizacionais",
+    col.names = c("Característica", "Brasil 2014", "Catar 2022", "América do Norte 2026")
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = TRUE,
+    font_size = 14
+  ) %>%
+  row_spec(0, bold = TRUE, background = "#FF9500", color = "white") %>%
+  column_spec(1, bold = TRUE, width = "20em") %>%
+  column_spec(4, background = "#FFF3E0")
+```
+
+<div class="page-break"></div>
+
+## Análise Histórica de Campeões
+
+### Distribuição Continental dos Títulos
+
+Desde 1930, apenas **8 países** conquistaram o título mundial em 22 edições, revelando uma concentração geográfica notável.
+
+```{r analise-campeoes}
+#| fig-width: 12
+#| fig-height: 6
+#| fig-cap: "Figura 3: Distribuição de Títulos Mundiais por País"
+#| code-fold: true
+#| echo: true
+
+# Contagem de títulos
+titulos <- historico %>%
+  filter(Year != 2026) %>%
+  count(Champion, name = "Títulos") %>%
+  arrange(desc(Títulos)) %>%
+  mutate(
+    Continente = case_when(
+      Champion %in% c("Brazil", "Argentina", "Uruguay") ~ "América do Sul",
+      Champion %in% c("Germany", "Italy", "France", "England", "Spain", "West Germany") ~ "Europa",
+      TRUE ~ "Outros"
+    )
+  )
+
+# Gráfico
+ggplot(titulos, aes(x = reorder(Champion, Títulos), y = Títulos, fill = Continente)) +
+  geom_col(width = 0.7) +
+  geom_text(aes(label = Títulos), hjust = -0.3, fontface = "bold", size = 5) +
+  scale_fill_manual(values = c("América do Sul" = "#FF9500", "Europa" = "#FFD500")) +
+  coord_flip() +
+  labs(
+    title = "Países Campeões da Copa do Mundo",
+    subtitle = "Total de títulos conquistados (1930-2022)",
+    x = NULL,
+    y = "Número de Títulos",
+    fill = "Continente"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 16),
+    plot.subtitle = element_text(color = "grey40", hjust = 0.5, size = 13),
+    legend.position = "top",
+    legend.text = element_text(size = 13),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text = element_text(size = 13)
+  ) +
+  ylim(0, 6)
+```
+
+::: {.caixa-brasil}
+**Brasil: A Busca Pelo Hexa**
+
+O Brasil é o maior campeão mundial com **5 títulos** (1958, 1962, 1970, 1994, 2002), mas não conquista a taça há **24 anos**. 
+
+- **Participações**: Única seleção presente em todas as 22 edições
+- **Desempenho recente**: Desde 2002, melhor resultado foi 4º lugar (2014)
+- **Expectativa 2026**: Formato expandido pode favorecer seleções tradicionais
+:::
+
+<div class="page-break"></div>
+
+## Projeções e Cenários para 2026
+
+### Novo Formato Competitivo
+
+O formato de 48 seleções introduz mudanças estruturais significativas que podem alterar a dinâmica competitiva do torneio.
+
+```{r comparacao-formatos}
+#| code-fold: true
+#| echo: true
+tribble(
+  ~Aspecto, ~Formato_32, ~Formato_48,
+  "Seleções", "32", "48 (+50%)",
+  "Grupos", "8 grupos de 4", "16 grupos de 3",
+  "Classificados por grupo", "2 (50%)", "2 (67%)",
+  "Fase eliminatória", "Oitavas direto", "Rodada de 32 → Oitavas",
+  "Total de partidas", "64", "104 (+62.5%)",
+  "Partidas para campeão", "7", "8",
+  "Duração estimada", "~30 dias", "~39 dias"
+) %>%
+  kable(
+    caption = "Tabela 4: Comparação Entre os Formatos",
+    col.names = c("Aspecto", "Formato Atual (32)", "Novo Formato (48)")
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover"),
+    full_width = TRUE,
+    font_size = 14
+  ) %>%
+  row_spec(0, bold = TRUE, background = "#FF9500", color = "white") %>%
+  column_spec(3, background = "#FFF3E0", bold = TRUE)
+```
+
+### Impacto Econômico Projetado
+
+As estimativas preliminares indicam que a Copa de 2026 será a mais lucrativa da história:
+
+- **Receita estimada da FIFA**: US$ 11-14 bilhões
+- **Impacto econômico regional**: US$ 5 bilhões
+- **Público esperado nos estádios**: 3.5-4 milhões
+- **Audiência global**: 6-7 bilhões de visualizações
+
+<div class="page-break"></div>
+
+## Conclusões e Perspectivas
+
+### Síntese dos Achados Principais
+
+Esta análise histórico-comparativa da Copa do Mundo FIFA revelou transformações fundamentais:
+
+**1. Crescimento Sem Precedentes**  
+O salto de 32 para 48 seleções representa a maior expansão proporcional desde 1930.
+
+**2. Desafio Logístico Histórico**  
+A configuração transcontinental apresenta complexidades que superam todas as edições anteriores.
+
+**3. Democratização vs. Qualidade**  
+O formato expandido promove inclusão, mas levanta questões sobre a excelência competitiva.
+
+**4. Sustentabilidade em Questão**  
+As distâncias intercontinentais apresentam desafios ambientais significativos.
+
+### O Futuro do Futebol Mundial
+
+A Copa de 2026 não é apenas mais uma edição - é um experimento de proporções inéditas que moldará o futuro dos megaeventos esportivos globais.
+
+Para o Brasil, representa a oportunidade de quebrar um jejum de 24 anos e conquistar o hexacampeonato.
+
+---

@@ -1,0 +1,60 @@
+/*-- scss:defaults --*/
+
+// Paleta Monocromática Elegante
+$primary: #2C3E50;
+$secondary: #34495E;
+$success: #27AE60;
+$info: #3498DB;
+$warning: #7F8C8D;
+$danger: #95A5A6;
+
+// Cores de Fundo
+$body-bg: #FFFFFF;
+$body-color: #2C3E50;
+$code-bg: #F4F6F7;
+
+// Tipografia Refinada
+$font-family-sans-serif: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+$font-family-serif: 'Crimson Pro', Georgia, serif;
+$headings-font-family: $font-family-serif;
+$headings-font-weight: 600;
+$headings-color: $primary;
+
+// Links
+$link-color: $primary;
+$link-decoration: none;
+$link-hover-color: $secondary;
+
+// Tabelas
+$table-border-color: #D5DBDB;
+$table-hover-bg: #F8F9FA;
+$table-striped-bg: #F8F9FA;
+
+// Código
+$code-color: $secondary;
+$kbd-bg: $primary;
+
+// Bordas
+$border-radius: 4px;
+$border-color: #D5DBDB;
+
+/*-- scss:rules --*/
+
+// Refinamentos adicionais
+.quarto-title-block {
+  margin-bottom: 2rem;
+  border-bottom: none;
+}
+
+.quarto-title-meta {
+  color: #5D6D7E;
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+// Melhor renderização de texto
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
