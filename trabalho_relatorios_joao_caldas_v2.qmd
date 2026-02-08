@@ -1,34 +1,43 @@
 ---
 title: "Copa do Mundo FIFA 2026"
-subtitle: "Análise Histórica e Projeções de 1930 a 2026"
 author: "João Caldas"
-date: "Janeiro de 2026"
+date: "2026-01-02"
 format:
   html:
-    toc: true
-    toc-depth: 3
-    toc-location: left
+    page-layout: full
     theme: cosmo
+    css: style/style2.css
+    toc: true
+    toc-location: left
+    toc-title: "Sumário"
     number-sections: true
-    code-fold: false
     code-tools: true
-    smooth-scroll: true
-    link-external-newwindow: true
-    css: styles-corrigido.css
-    grid:
-      sidebar-width: 280px
-      body-width: 1000px
-      margin-width: 250px
+    code-fold: false
+    title-block-banner: false
     include-in-header:
       text: |
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-execute:
-  echo: false
-  warning: false
-  message: false
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+        <style>
+        #title-block-header { display: none; }
+        </style>
+    include-after-body:
+      file: style/navbar-custom.html
+      
 ---
+::: {.column-page}
+<div class="header-block-final">
+  <h1>COPA DO MUNDO 2026</h1>
+  <h3>Relatórios Reprodutíveis com R</h3>
+  
+  <div>
+   <p><strong>Autor:</strong> João Caldas </p>
+   <p><strong>Data de Criação:</strong> 02 de Janeiro de 2026</p>
+   <p><strong>Instituição:</strong> IME-USP </p>
+  </div>
+</div>
+:::
 
+---
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(knitr)
@@ -40,19 +49,7 @@ library(htmlwidgets)
 library(htmltools)
 ```
 
-::: {.header-verao}
-<div class="header-container">
-  <img src="img/logo_verao_ime_usp.png" class="logo-verao" alt="Logo Verão IME-USP">
-  <div class="header-text">
-    <h1 class="titulo-principal">Copa do Mundo FIFA 2026</h1>
-    <p class="subtitulo-principal">Análise Histórica e Projeções de 1930 a 2026</p>
-  </div>
-</div>
-:::
-
-<div class="page-break"></div>
-
-## Introdução
+## Introdução {.tabset .tabset-fade .tabset-pills}
 
 A Copa do Mundo de 2026 marca um momento histórico sem precedentes no futebol mundial. Pela primeira vez na história de 96 anos do torneio, três nações sediarão conjuntamente o evento: **Canadá, Estados Unidos e México**. Esta edição não representa apenas uma expansão geográfica, mas uma transformação fundamental na estrutura, escala e filosofia do maior espetáculo do futebol.
 
@@ -75,7 +72,7 @@ Quando a primeira Copa do Mundo foi realizada no Uruguai em 1930, apenas **13 se
 
 <div class="page-break"></div>
 
-## Metodologia e Fontes de Dados
+## Metodologia e Fontes de Dados {.tabset .tabset-fade .tabset-pills}
 
 ### Coleta e Processamento de Dados
 
@@ -155,7 +152,7 @@ library(htmlwidgets)  # Widgets HTML interativos
 
 <div class="page-break"></div>
 
-## Evolução Temporal do Torneio
+## Evolução Temporal do Torneio {.tabset .tabset-fade .tabset-pills}
 
 ### O Crescimento em Números
 
@@ -287,7 +284,7 @@ p1 + p2
 
 <div class="page-break"></div>
 
-## Distribuição Geográfica e Desafios Logísticos
+## Distribuição Geográfica e Desafios Logísticos {.tabset .tabset-fade .tabset-pills}
 
 ### Modelos Organizacionais Comparados
 
@@ -301,16 +298,35 @@ coords <- read_csv("dados/coords_historico_total.csv", show_col_types = FALSE)
 
 # Sedes do Brasil 2014
 sedes_2014 <- coords %>% 
-  filter(cidade %in% c("Rio de Janeiro", "Sao Paulo", "Belo Horizonte", 
-                       "Brasilia", "Fortaleza", "Manaus", "Salvador",
-                       "Recife", "Porto Alegre", "Curitiba", "Natal", "Cuiaba"))
-
+  filter(cidade %in% c(
+    "Rio de Janeiro", 
+    "Sao Paulo", 
+    "São Paulo",
+    "Porto Alegre",           
+    "Brasilia", 
+    "Curitiba",            
+    "Fortaleza", 
+    "Manaus", 
+    "Salvador",
+    "Recife", 
+    "Belo Horizonte",
+    "Brasília", 
+    "Natal", 
+    "Cuiaba",
+    "Cuiabá"               
+  ))
+  lat = c(-22.9068, -23.5505, -19.9167, -15.7939,
+            -3.7172, -3.1190, -12.9714, -8.0476,
+            -30.0346, -25.4284, -5.7945, -15.6014)
+    lng = c(-43.1729, -46.6333, -43.9345, -47.8828,
+            -38.5433, -60.0217, -38.5014, -34.8770,
+            -51.2177, -49.2733, -35.2110, -56.0979)
 # Mapa interativo - Brasil 2014
 leaflet(sedes_2014, width = "100%", height = "500px") %>%
   addTiles() %>%
   addCircleMarkers(
-    lng = ~lng,
-    lat = ~lat,
+    lng = lng,
+    lat = lat,
     radius = 10,
     color = "#009b3a",
     fillColor = "#FFD500",
@@ -335,8 +351,13 @@ leaflet(sedes_2014, width = "100%", height = "500px") %>%
 #| code-fold: true
 #| echo: true
 # Sedes do Catar 2022
-sedes_2022 <- coords %>% 
-  filter(cidade %in% c("Lusail", "Doha", "Al Rayyan", "Al Wakrah", "Al Khor"))
+sedes_2022 <- tibble(
+    cidade = c("Lusail", "Al Khor", "Al Rayyan (Khalifa)", "Al Rayyan (Education City)",
+               "Doha (974)", "Doha (Al Thumama)", "Al Wakrah", "Al Rayyan (Ahmad Bin Ali)"),
+    lat = c(25.4283, 25.6808, 25.2644, 25.3130,
+            25.2700, 25.2318, 25.1716, 25.3835),
+    lng = c(51.4894, 51.4972, 51.4433, 51.4239,
+            51.4444, 51.5311, 51.6061, 51.3383))
 
 # Mapa interativo - Catar 2022
 leaflet(sedes_2022, width = "100%", height = "500px") %>%
@@ -429,7 +450,7 @@ tribble(
 
 <div class="page-break"></div>
 
-## Análise Histórica de Campeões
+## Análise Histórica de Campeões {.tabset .tabset-fade .tabset-pills}
 
 ### Distribuição Continental dos Títulos
 
@@ -536,7 +557,7 @@ As estimativas preliminares indicam que a Copa de 2026 será a mais lucrativa da
 
 <div class="page-break"></div>
 
-## Conclusões e Perspectivas
+## Conclusões e Perspectivas {.tabset .tabset-fade .tabset-pills}
 
 ### Síntese dos Achados Principais
 
