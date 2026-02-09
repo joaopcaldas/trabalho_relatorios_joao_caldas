@@ -4,6 +4,7 @@ author: "João Caldas"
 date: "2026-01-02"
 format:
   html:
+    embed-resources: true
     page-layout: full
     theme: cosmos
     css: style2.css
