@@ -2,7 +2,6 @@ project:
   type: website
   output-dir: docs
   resources:
-    - dados/
     - logo_verao.png
     - "*.png"
 website:
