@@ -1,0 +1,226 @@
+<!-- NAVBAR CUSTOMIZADA -->
+<nav class="navbar-custom">
+  <div class="navbar-left">
+    <div class="navbar-links">
+      <a href="https://github.com/joaopcaldas" class="navbar-link" target="_blank" title="GitHub">
+        <i class="bi bi-github"></i>
+        <span>GitHub</span>
+      </a>
+      <a href="https://www.linkedin.com/in/joaopedro-caldas/" class="navbar-link" target="_blank" title="LinkedIn">
+        <i class="bi bi-linkedin"></i>
+        <span>LinkedIn</span>
+      </a>
+      <a href="https://www.kaggle.com/joaopcaldas" class="navbar-link" target="_blank" title="Kaggle">
+        <i class="bi bi-trophy"></i>
+        <span>Kaggle</span>
+      </a>
+    </div>
+  </div>
+  
+  <div class="navbar-center">
+    <input type="text" class="navbar-search" placeholder="🔍 Buscar no documento..." id="doc-search">
+  </div>
+  
+  <div class="navbar-right">
+    <div class="navbar-controls">
+      <button class="control-btn" id="toggle-code" title="Mostrar/Ocultar Código">
+        <i class="bi bi-code-slash"></i>
+        <span>Code</span>
+      </button>
+      <button class="control-btn" id="toggle-dark" title="Alternar Modo Escuro">
+        <i class="bi bi-moon-stars"></i>
+        <span>Dark</span>
+      </button>
+    </div>
+    <img src="logo_verao.png" alt="Verão IME-USP" class="logo-usp-navbar">
+  </div>
+</nav>
+
+<!-- JAVASCRIPT PARA FUNCIONALIDADES -->
+<script>
+// ============================================
+// INICIALIZAÇÃO - GARANTIR VISIBILIDADE DO TOC
+// ============================================
+// IMPORTANTE: Usar setTimeout para esperar o Quarto terminar de renderizar
+setTimeout(function() {
+  console.log('Inicializando TOC...');
+  
+  // Procurar por diferentes seletores que o Quarto pode usar
+  const sidebar = document.querySelector('#quarto-sidebar-toc-left') || 
+                  document.querySelector('.sidebar.toc-left') ||
+                  document.querySelector('nav[role="doc-toc"]');
+                  
+  const toc = document.querySelector('#TOC') ||
+              document.querySelector('nav.toc') ||
+              document.querySelector('.table-of-contents');
+  
+  console.log('Sidebar encontrada:', sidebar);
+  console.log('TOC encontrado:', toc);
+  
+  if (sidebar) {
+    sidebar.style.display = 'block !important';
+    sidebar.style.visibility = 'visible !important';
+    sidebar.style.opacity = '1 !important';
+  }
+  
+  if (toc) {
+    toc.style.display = 'block !important';
+    toc.style.visibility = 'visible !important';
+    toc.style.opacity = '1 !important';
+  }
+  
+  // Forçar recálculo de layout
+  if (sidebar) sidebar.offsetHeight;
+  if (toc) toc.offsetHeight;
+  
+}, 100); // Esperar 100ms para o Quarto terminar
+
+// ============================================
+// DARK MODE TOGGLE
+// ============================================
+const darkModeBtn = document.getElementById('toggle-dark');
+const body = document.body;
+
+// Verificar preferência salva
+if (localStorage.getItem('darkMode') === 'enabled') {
+  body.classList.add('dark-mode');
+  darkModeBtn.innerHTML = '<i class="bi bi-sun"></i><span>Light</span>';
+}
+
+darkModeBtn.addEventListener('click', () => {
+  body.classList.toggle('dark-mode');
+  
+  if (body.classList.contains('dark-mode')) {
+    localStorage.setItem('darkMode', 'enabled');
+    darkModeBtn.innerHTML = '<i class="bi bi-sun"></i><span>Light</span>';
+  } else {
+    localStorage.setItem('darkMode', null);
+    darkModeBtn.innerHTML = '<i class="bi bi-moon-stars"></i><span>Dark</span>';
+  }
+});
+
+// ============================================
+// SHOW/HIDE CODE TOGGLE
+// ============================================
+const codeBtn = document.getElementById('toggle-code');
+let codeVisible = true;
+
+codeBtn.addEventListener('click', () => {
+  const codeCells = document.querySelectorAll('.cell-code, .sourceCode, pre.sourceCode');
+  codeVisible = !codeVisible;
+  
+  codeCells.forEach(cell => {
+    cell.style.display = codeVisible ? 'block' : 'none';
+  });
+  
+  codeBtn.innerHTML = codeVisible 
+    ? '<i class="bi bi-code-slash"></i><span>Code</span>'
+    : '<i class="bi bi-eye-slash"></i><span>Show</span>';
+});
+
+// ============================================
+// BUSCA NO DOCUMENTO
+// ============================================
+const searchInput = document.getElementById('doc-search');
+let searchTimeout;
+
+searchInput.addEventListener('input', (e) => {
+  clearTimeout(searchTimeout);
+  const searchTerm = e.target.value.toLowerCase();
+  
+  if (searchTerm.length < 2) {
+    // Limpar highlights se busca for muito curta
+    document.querySelectorAll('.search-highlight').forEach(el => {
+      el.classList.remove('search-highlight');
+    });
+    return;
+  }
+  
+  searchTimeout = setTimeout(() => {
+    // Remover highlights anteriores
+    document.querySelectorAll('.search-highlight').forEach(el => {
+      el.classList.remove('search-highlight');
+    });
+    
+    // Buscar e destacar
+    const content = document.querySelector('main');
+    const paragraphs = content.querySelectorAll('p, h1, h2, h3, h4, li');
+    
+    paragraphs.forEach(p => {
+      if (p.textContent.toLowerCase().includes(searchTerm)) {
+        p.classList.add('search-highlight');
+      }
+    });
+  }, 300);
+});
+
+// Estilo para highlight de busca
+const style = document.createElement('style');
+style.textContent = `
+  .search-highlight {
+    background-color: rgba(243, 156, 18, 0.3);
+    transition: background-color 0.3s ease;
+    border-radius: 3px;
+    padding: 0.2rem 0;
+  }
+  
+  body.dark-mode .search-highlight {
+    background-color: rgba(230, 126, 34, 0.4);
+  }
+`;
+document.head.appendChild(style);
+
+// ============================================
+// SMOOTH SCROLL PARA LINKS DO TOC
+// ============================================
+// Esperar o TOC ser renderizado antes de adicionar eventos
+setTimeout(() => {
+  const tocLinks = document.querySelectorAll('#TOC a, nav[role="doc-toc"] a, .toc a');
+  console.log('Links do TOC encontrados:', tocLinks.length);
+  
+  tocLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetId = link.getAttribute('href');
+      const targetElement = document.querySelector(targetId);
+      
+      if (targetElement) {
+        const navbarHeight = document.querySelector('.navbar-custom').offsetHeight;
+        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - navbarHeight - 20;
+        
+        window.scrollTo({
+          top: targetPosition,
+          behavior: 'smooth'
+        });
+      }
+    });
+  });
+}, 500); // Esperar 500ms
+
+// ============================================
+// ACTIVE LINK NO TOC
+// ============================================
+window.addEventListener('scroll', () => {
+  const sections = document.querySelectorAll('h2[id], h3[id]');
+  const navLinks = document.querySelectorAll('#TOC a, nav[role="doc-toc"] a, .toc a');
+  
+  let current = '';
+  
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop;
+    const navbarHeight = document.querySelector('.navbar-custom')?.offsetHeight || 70;
+    
+    if (window.pageYOffset >= sectionTop - navbarHeight - 100) {
+      current = section.getAttribute('id');
+    }
+  });
+  
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    const href = link.getAttribute('href');
+    if (href === '#' + current) {
+      link.classList.add('active');
+    }
+  });
+});
+</script>

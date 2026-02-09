@@ -5,8 +5,8 @@ date: "2026-01-02"
 format:
   html:
     page-layout: full
-    theme: cosmo
-    css: style/style2.css
+    theme: cosmos
+    css: style2.css
     toc: true
     toc-location: left
     toc-title: "Sumário"
@@ -21,7 +21,7 @@ format:
         #title-block-header { display: none; }
         </style>
     include-after-body:
-      file: style/navbar-custom.html
+      file: navbar-custom.html
       
 ---
 ::: {.column-page}
@@ -49,7 +49,7 @@ library(htmlwidgets)
 library(htmltools)
 ```
 
-## Introdução {.tabset .tabset-fade .tabset-pills}
+## Introdução 
 
 A Copa do Mundo de 2026 marca um momento histórico sem precedentes no futebol mundial. Pela primeira vez na história de 96 anos do torneio, três nações sediarão conjuntamente o evento: **Canadá, Estados Unidos e México**. Esta edição não representa apenas uma expansão geográfica, mas uma transformação fundamental na estrutura, escala e filosofia do maior espetáculo do futebol.
 
@@ -152,7 +152,7 @@ library(htmlwidgets)  # Widgets HTML interativos
 
 <div class="page-break"></div>
 
-## Evolução Temporal do Torneio {.tabset .tabset-fade .tabset-pills}
+## Evolução Temporal do Torneio 
 
 ### O Crescimento em Números
 
@@ -284,7 +284,7 @@ p1 + p2
 
 <div class="page-break"></div>
 
-## Distribuição Geográfica e Desafios Logísticos {.tabset .tabset-fade .tabset-pills}
+## Distribuição Geográfica e Desafios Logísticos 
 
 ### Modelos Organizacionais Comparados
 
@@ -450,7 +450,7 @@ tribble(
 
 <div class="page-break"></div>
 
-## Análise Histórica de Campeões {.tabset .tabset-fade .tabset-pills}
+## Análise Histórica de Campeões
 
 ### Distribuição Continental dos Títulos
 
@@ -557,7 +557,8 @@ As estimativas preliminares indicam que a Copa de 2026 será a mais lucrativa da
 
 <div class="page-break"></div>
 
-## Conclusões e Perspectivas {.tabset .tabset-fade .tabset-pills}
+## Conclusões e Perspectivas 
+
 
 ### Síntese dos Achados Principais
 

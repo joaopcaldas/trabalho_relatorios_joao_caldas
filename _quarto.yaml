@@ -1,0 +1,9 @@
+project:
+  type: website
+  output-dir: docs
+  resources:
+    - logo_verao.png
+    - "*.png"
+website:
+  title: "Meu Relatório"
+  

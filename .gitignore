@@ -1,0 +1,40 @@
+# Arquivos do R e RStudio
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+
+# Arquivos do Quarto (NÃO ignorar docs/ porque é onde vai o GitHub Pages)
+/.quarto/
+*_cache/
+*_files/
+
+# Arquivos temporários
+*.log
+*.tmp
+*~
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de ambiente
+.env
+.Renviron
+
+# renv - dependências R (opcional, depende se quer versionar)
+# renv/library/
+# renv/local/
+# renv/staging/
+
+# Arquivos de dados grandes (descomentar se necessário)
+# *.csv
+# *.xlsx
+# *.rds
+
+# Arquivos de backup
+*_backup.*
+*.bak
+
+**/*.quarto_ipynb
